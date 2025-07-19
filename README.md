@@ -14,4 +14,5 @@ client side:
 2. go to the settings and set "Access-Control-Allow-Origin" to *
 3. turn the thing on
 4. now feed should work, user posts doesn't need this
+
 this is a bandaid fix btw.
