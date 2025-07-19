@@ -53,7 +53,6 @@ async function getFeed() {
 		document.querySelector(".hjonk-feed").innerHTML = "";
 		const response_data = await response.text();
 		const feed = parser.parseFromString(response_data, "text/xml");
-		console.log(feed);
 		const errorNode = feed.querySelector("parsererror");
 		if (errorNode) {
 			console.log("error while parsing");
