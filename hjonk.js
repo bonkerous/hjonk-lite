@@ -57,21 +57,29 @@ async function getFeed() {
 		if (errorNode) {
 			console.log("error while parsing");
 		} else {
-			console.log(feed.getElementsByTagName("description")[1].childNodes[0].nodeValue);
+			// pass
 		}
 		
 		for (const property in feed.getElementsByTagName("item")) {
 			if (property == 0) {
-				// do nothing
+				// pass
 			}
 			else {
 				const node = document.createElement("div");
-				const textnode = document.createTextNode(feed.getElementsByTagName("description")[property].childNodes[0].nodeValue);
-				node.appendChild(textnode);
+				const post_date = "Posted at " + feed.getElementsByTagName("pubDate")[property].childNodes[0].nodeValue;
+				const post_body = feed.getElementsByTagName("description")[property].childNodes[0].nodeValue;
+				node.appendChild(document.createElement("br"));
+				node.appendChild(document.createElement("hr"));
+				node.append(post_date);
+				node.appendChild(document.createElement("br"));
+				node.append(post_body);
+				node.appendChild(document.createElement("br"));
+				node.appendChild(document.createElement("hr"));
 				document.querySelector(".hjonk-feed").appendChild(node);
 			}
 		}
 	} catch (error) {
 		console.error(error.message);
+		console.log("\"can't access property 0, feed.getElementsByTagName(...)[property].childNodes is undefined\" means the post was a repost and had no content, don't worry about it.")
 	}
 }
