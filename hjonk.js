@@ -41,45 +41,38 @@ async function getPost() {
 }
 
 async function getFeed() {
+	const feedurl = "https://hjonk.me/api/v1.0/feed/"
+	
 	document.querySelector(".hjonk-feed").innerHTML = "";
 	document.querySelector(".hjonk-feed").innerHTML = "Working...";
-	const rssurl = "https://hjonk.me/rss/feed";
-	const parser = new DOMParser();
+
 	try {
-		const response = await fetch(rssurl);
-		if (!response.ok) {
-			throw new Error('Response status: ${responce.status}');
-		}
+		const responce = await fetch(feedurl);
 		document.querySelector(".hjonk-feed").innerHTML = "";
-		const response_data = await response.text();
-		const feed = parser.parseFromString(response_data, "text/xml");
-		const errorNode = feed.querySelector("parsererror");
-		if (errorNode) {
-			console.log("error while parsing");
-		} else {
-			// pass
+		
+		if (!responce.ok) {
+			throw new Error('Responce status: ${responce.status}');
 		}
 		
-		for (const property in feed.getElementsByTagName("item")) {
-			if (property == 0) {
-				// pass
-			}
-			else {
-				const node = document.createElement("div");
-				const post_date = "Posted at " + feed.getElementsByTagName("pubDate")[property].childNodes[0].nodeValue;
-				const post_body = feed.getElementsByTagName("description")[property].childNodes[0].nodeValue;
-				node.appendChild(document.createElement("br"));
-				node.appendChild(document.createElement("hr"));
-				node.append(post_date);
-				node.appendChild(document.createElement("br"));
-				node.append(post_body);
-				node.appendChild(document.createElement("br"));
-				node.appendChild(document.createElement("hr"));
-				document.querySelector(".hjonk-feed").appendChild(node);
-			}
+		const json = await responce.json();
+		
+		for (const property in json) {
+			const post = json[property].body;
+			const postDate = json[property].created_at;
+			const userId = json[property].user_id;
+			const node = document.createElement("div");
+			const post_date = document.createTextNode("Posted at " + postDate + " by user ID " + userId);
+			const post_body = document.createTextNode(post);
+			node.appendChild(document.createElement("br"));
+			node.appendChild(document.createElement("hr"));
+			node.appendChild(post_date);
+			node.appendChild(document.createElement("br"));
+			node.appendChild(post_body);
+			node.appendChild(document.createElement("br"));
+			node.appendChild(document.createElement("hr"));
+			document.querySelector(".hjonk-feed").appendChild(node);
 		}
 	} catch (error) {
 		console.error(error.message);
-		console.log("\"can't access property 0, feed.getElementsByTagName(...)[property].childNodes is undefined\" means the post was a repost and had no content, don't worry about it.")
 	}
 }
